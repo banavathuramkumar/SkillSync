@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <defs>
+    <linearGradient id="ss-blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#087CF5" />
+      <stop offset="100%" stop-color="#0256B8" />
+    </linearGradient>
+    <linearGradient id="ss-mint-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#78D6C0" />
+      <stop offset="100%" stop-color="#34B898" />
+    </linearGradient>
+    <linearGradient id="ss-bridge-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#087CF5" />
+      <stop offset="50%" stop-color="#3DB4DA" />
+      <stop offset="100%" stop-color="#78D6C0" />
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(4, 28)">
+    <!-- Left Loop - Vivid Blue -->
+    <path
+      d="M36 12C20 12 10 22 10 36C10 50 20 60 36 60C50 60 58 48 68 36C58 24 50 12 36 12Z"
+      stroke="url(#ss-blue-grad)"
+      stroke-width="12"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+
+    <!-- Right Loop - Mint Green -->
+    <path
+      d="M84 12C98 12 110 22 110 36C110 50 98 60 84 60C70 60 62 48 52 36C62 24 70 12 84 12Z"
+      stroke="url(#ss-mint-grad)"
+      stroke-width="12"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+
+    <!-- Overlap Bridge -->
+    <path
+      d="M56 31.5L64 40.5"
+      stroke="url(#ss-bridge-grad)"
+      stroke-width="12"
+      stroke-linecap="round"
+    />
+  </g>
+</svg>

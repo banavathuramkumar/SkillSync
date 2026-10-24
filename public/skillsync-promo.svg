@@ -1,0 +1,192 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" style="background:#0b1120; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Background Gradients -->
+    <radialGradient id="bg-glow-blue" cx="20%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#087CF5" stop-opacity="0.32" />
+      <stop offset="100%" stop-color="#0b1120" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="bg-glow-mint" cx="80%" cy="50%" r="55%">
+      <stop offset="0%" stop-color="#78D6C0" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#0b1120" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="card-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9" />
+    </linearGradient>
+
+    <!-- Logo Gradients -->
+    <linearGradient id="ss-blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#087CF5" />
+      <stop offset="100%" stop-color="#0256B8" />
+    </linearGradient>
+    <linearGradient id="ss-mint-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#78D6C0" />
+      <stop offset="100%" stop-color="#34B898" />
+    </linearGradient>
+    <linearGradient id="ss-bridge-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#087CF5" />
+      <stop offset="50%" stop-color="#3DB4DA" />
+      <stop offset="100%" stop-color="#78D6C0" />
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="subtle-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.5" />
+    </filter>
+
+    <!-- Subtle Dot Pattern -->
+    <pattern id="grid-dots" x="0" y="0" width="36" height="36" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.2" fill="#334155" opacity="0.45" />
+    </pattern>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1200" height="675" fill="#0b1120" />
+  
+  <!-- Dot Pattern Overlay -->
+  <rect width="1200" height="675" fill="url(#grid-dots)" />
+
+  <!-- Ambient Ambient Glows -->
+  <circle cx="280" cy="300" r="450" fill="url(#bg-glow-blue)" />
+  <circle cx="950" cy="360" r="450" fill="url(#bg-glow-mint)" />
+
+  <!-- Glass Card Backing -->
+  <rect x="70" y="55" width="1060" height="565" rx="28" fill="url(#card-grad)" stroke="#334155" stroke-width="1.5" filter="url(#subtle-shadow)" />
+
+  <!-- Top Pill Badge -->
+  <g transform="translate(120, 100)">
+    <rect width="360" height="38" rx="19" fill="#0f172a" stroke="#087CF5" stroke-width="1.5" />
+    <circle cx="22" cy="19" r="5" fill="#78D6C0" />
+    <text x="38" y="24" fill="#E2E8F0" font-size="13" font-weight="700" letter-spacing="1.2">CORPORATE CONNECT EXCLUSIVE</text>
+  </g>
+
+  <!-- Main Central Brand Title & Logo (Left Side) -->
+  <g transform="translate(120, 175)">
+    <!-- Big SkillSync Infinity Symbol -->
+    <g transform="translate(0, 0) scale(1.65)" filter="url(#neon-glow)">
+      <!-- Left Loop - Vivid Blue -->
+      <path
+        d="M36 12C20 12 10 22 10 36C10 50 20 60 36 60C50 60 58 48 68 36C58 24 50 12 36 12Z"
+        stroke="url(#ss-blue-grad)"
+        stroke-width="11"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        fill="none"
+      />
+      <!-- Right Loop - Mint Green -->
+      <path
+        d="M84 12C98 12 110 22 110 36C110 50 98 60 84 60C70 60 62 48 52 36C62 24 70 12 84 12Z"
+        stroke="url(#ss-mint-grad)"
+        stroke-width="11"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        fill="none"
+      />
+      <!-- Synchronized Ribbons Overlap -->
+      <path
+        d="M44 26C52 34 60 42 68 46"
+        stroke="url(#ss-blue-grad)"
+        stroke-width="11"
+        stroke-linecap="round"
+        fill="none"
+      />
+      <path
+        d="M52 26C60 34 68 42 76 46"
+        stroke="url(#ss-mint-grad)"
+        stroke-width="11"
+        stroke-linecap="round"
+        fill="none"
+      />
+    </g>
+
+    <!-- Wordmark -->
+    <g transform="translate(225, 82)">
+      <text font-size="74" font-weight="900" letter-spacing="-1.5">
+        <tspan fill="#FFFFFF">Skill</tspan><tspan fill="#087CF5">Sync</tspan>
+      </text>
+    </g>
+
+    <!-- Tagline Ribbon Badges (matching landing page styling) -->
+    <g transform="translate(0, 160)">
+      <!-- Black badge "Skills align." -->
+      <g transform="rotate(-1.5)">
+        <rect width="210" height="52" rx="14" fill="#020617" stroke="#1e293b" stroke-width="2" />
+        <text x="24" y="34" fill="#FFFFFF" font-size="24" font-weight="800">Skills align.</text>
+      </g>
+      <!-- Blue badge "Teams thrive." -->
+      <g transform="translate(225, 0) rotate(1.5)">
+        <rect width="215" height="52" rx="14" fill="#087CF5" />
+        <text x="24" y="34" fill="#FFFFFF" font-size="24" font-weight="800">Teams thrive.</text>
+      </g>
+    </g>
+
+    <!-- Subtitle description -->
+    <text x="0" y="260" fill="#94A3B8" font-size="18" font-weight="400" line-height="1.6">
+      <tspan x="0" dy="0">Stop building hackathon teams randomly.</tspan>
+      <tspan x="0" dy="28">Connect with verified AI engineers, full-stack builders, and designers.</tspan>
+    </text>
+  </g>
+
+  <!-- Feature Highlights (Right Side Cards) -->
+  <g transform="translate(680, 120)">
+    <!-- Feature 1 -->
+    <g transform="translate(0, 0)">
+      <rect width="400" height="82" rx="16" fill="#0f172a" stroke="#334155" stroke-width="1.2" />
+      <circle cx="42" cy="41" r="20" fill="#087CF5" fill-opacity="0.15" />
+      <text x="34" y="47" font-size="18">🏆</text>
+      <text x="78" y="35" fill="#FFFFFF" font-size="16" font-weight="700">SIH &amp; Hackathon Ready</text>
+      <text x="78" y="58" fill="#94A3B8" font-size="13">Form balanced 4-6 member squads instantly</text>
+    </g>
+
+    <!-- Feature 2 -->
+    <g transform="translate(0, 96)">
+      <rect width="400" height="82" rx="16" fill="#0f172a" stroke="#334155" stroke-width="1.2" />
+      <circle cx="42" cy="41" r="20" fill="#78D6C0" fill-opacity="0.15" />
+      <text x="34" y="47" font-size="18">⚡</text>
+      <text x="78" y="35" fill="#FFFFFF" font-size="16" font-weight="700">Role-Specific Matchmaking</text>
+      <text x="78" y="58" fill="#94A3B8" font-size="13">Frontend, Backend, AI/ML, DevOps &amp; UI/UX</text>
+    </g>
+
+    <!-- Feature 3 -->
+    <g transform="translate(0, 192)">
+      <rect width="400" height="82" rx="16" fill="#0f172a" stroke="#334155" stroke-width="1.2" />
+      <circle cx="42" cy="41" r="20" fill="#087CF5" fill-opacity="0.15" />
+      <text x="34" y="47" font-size="18">💬</text>
+      <text x="78" y="35" fill="#FFFFFF" font-size="16" font-weight="700">Instant Team Workspaces</text>
+      <text x="78" y="58" fill="#94A3B8" font-size="13">Real-time team chat &amp; fast join requests</text>
+    </g>
+
+    <!-- Feature 4 -->
+    <g transform="translate(0, 288)">
+      <rect width="400" height="82" rx="16" fill="#0f172a" stroke="#334155" stroke-width="1.2" />
+      <circle cx="42" cy="41" r="20" fill="#78D6C0" fill-opacity="0.15" />
+      <text x="34" y="47" font-size="18">🛡️</text>
+      <text x="78" y="35" fill="#FFFFFF" font-size="16" font-weight="700">Zero Fake Profiles</text>
+      <text x="78" y="58" fill="#94A3B8" font-size="13">Verified GitHub, LinkedIn &amp; real project proof</text>
+    </g>
+  </g>
+
+  <!-- Bottom Bar Divider -->
+  <line x1="120" y1="520" x2="1080" y2="520" stroke="#334155" stroke-width="1" stroke-dasharray="4 4" />
+
+  <!-- Footer Branding & Credits -->
+  <g transform="translate(120, 545)">
+    <!-- Founder info -->
+    <text x="0" y="24" fill="#E2E8F0" font-size="14" font-weight="600">
+      Founded by <tspan fill="#78D6C0">Ramkumar Banavathu</tspan> • SRM University-AP
+    </text>
+    <text x="0" y="44" fill="#64748B" font-size="12">
+      Built for student developers, innovators, and collegiate hackathons across India
+    </text>
+
+    <!-- WhatsApp Channel Badge -->
+    <g transform="translate(680, 0)">
+      <rect width="280" height="46" rx="12" fill="#25D366" fill-opacity="0.15" stroke="#25D366" stroke-width="1.2" />
+      <text x="20" y="28" fill="#25D366" font-size="13" font-weight="700">📢 Corporate Connect Community</text>
+    </g>
+  </g>
+</svg>

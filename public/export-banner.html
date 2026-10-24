@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkillSync • Brand Graphics &amp; PNG Exporter</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0B1120;
+      color: #E2E8F0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      max-width: 1200px;
+      width: 100%;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 8px;
+    }
+    h1 span { color: #087CF5; }
+    p.sub {
+      color: #94A3B8;
+      font-size: 16px;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(8, 124, 245, 0.15);
+      border: 1px solid #087CF5;
+      color: #78D6C0;
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+    .card {
+      background: #0F172A;
+      border: 1px solid #334155;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #F8FAFC;
+    }
+    .preview-box {
+      background: #020617;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #1E293B;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .preview-box img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #087CF5;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .btn:hover {
+      background: #0266D6;
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: #1E293B;
+      border: 1px solid #475569;
+      color: #E2E8F0;
+    }
+    .btn-secondary:hover {
+      background: #334155;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+    }
+    footer {
+      margin-top: 48px;
+      text-align: center;
+      color: #64748B;
+      font-size: 14px;
+    }
+    footer strong { color: #78D6C0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">CORPORATE CONNECT • BRAND KIT</div>
+      <h1>Skill<span>Sync</span> Official Promo Assets</h1>
+      <p class="sub">High-resolution brand graphics for WhatsApp Channel, LinkedIn, and Social Announcements</p>
+    </header>
+
+    <div class="cards-grid">
+      <!-- Landscape Promo Banner -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Landscape Promo Banner (1200 × 675)</div>
+            <p style="color: #64748B; font-size: 13px;">Optimal for WhatsApp Channel header, LinkedIn, Twitter/X cards</p>
+          </div>
+          <div class="actions">
+            <button class="btn" onclick="downloadAsPng('/skillsync-promo.svg', 'SkillSync-Promo-Landscape.png', 1200, 675)">
+              ⬇ Download PNG
+            </button>
+            <a href="/skillsync-promo.svg" download="SkillSync-Promo.svg" class="btn btn-secondary">
+              Download SVG
+            </a>
+          </div>
+        </div>
+        <div class="preview-box">
+          <img src="/skillsync-promo.svg" alt="SkillSync Landscape Banner" />
+        </div>
+      </div>
+
+      <!-- Square Promo Banner -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Square Social Post (1080 × 1080)</div>
+            <p style="color: #64748B; font-size: 13px;">Optimal for WhatsApp Feed posts, Instagram, and Discord announcements</p>
+          </div>
+          <div class="actions">
+            <button class="btn" onclick="downloadAsPng('/skillsync-square.svg', 'SkillSync-Post-Square.png', 1080, 1080)">
+              ⬇ Download PNG
+            </button>
+            <a href="/skillsync-square.svg" download="SkillSync-Square.svg" class="btn btn-secondary">
+              Download SVG
+            </a>
+          </div>
+        </div>
+        <div class="preview-box" style="max-width: 600px; margin: 0 auto 16px auto;">
+          <img src="/skillsync-square.svg" alt="SkillSync Square Post" />
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Founded by <strong>Ramkumar Banavathu</strong> • SRM University-AP • Corporate Connect Community
+    </footer>
+  </div>
+
+  <script>
+    async function downloadAsPng(svgUrl, filename, width, height) {
+      try {
+        const resp = await fetch(svgUrl);
+        const svgText = await resp.text();
+        const blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+        const URL = window.URL || window.webkitURL || window;
+        const blobURL = URL.createObjectURL(blob);
+        
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          // 2x Retina Resolution
+          const scale = 2;
+          canvas.width = width * scale;
+          canvas.height = height * scale;
+          const ctx = canvas.getContext('2d');
+          ctx.scale(scale, scale);
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          canvas.toBlob(function(pngBlob) {
+            const pngUrl = URL.createObjectURL(pngBlob);
+            const a = document.createElement('a');
+            a.href = pngUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(pngUrl);
+            URL.revokeObjectURL(blobURL);
+          }, 'image/png');
+        };
+        img.src = blobURL;
+      } catch (err) {
+        console.error('Error generating PNG:', err);
+        alert('PNG export started. If blocked, you can right-click the image preview and select "Save image as...".');
+      }
+    }
+  </script>
+</body>
+</html>
