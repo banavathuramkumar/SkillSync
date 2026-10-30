@@ -80,6 +80,16 @@ export const TeamDetailsPage = () => {
       })
   );
 
+  // Compute roles posted by the team leader (or only the remaining spots)
+  const remainingSpots = Math.max(0, (team?.maxMembers || 4) - (team?.members?.length || 0));
+  const rawRoles =
+    team?.openRoles && team.openRoles.length > 0
+      ? team.openRoles
+      : team?.requiredSkills && team.requiredSkills.length > 0
+      ? team.requiredSkills.slice(0, Math.max(1, remainingSpots))
+      : ["Collaborator"];
+  const rolesList = rawRoles.slice(0, Math.max(1, remainingSpots));
+
   // Fetch pending requests for this team if owner
   useEffect(() => {
     if (isOwner && teamId) {
@@ -376,20 +386,22 @@ export const TeamDetailsPage = () => {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                {team.requiredSkills?.map((skill, index) => (
+                {rolesList.map((role, index) => (
                   <div
-                    key={`${skill}-${index}`}
+                    key={`${role}-${index}`}
                     className="p-3.5 rounded-2xl border border-brand-border bg-slate-50/70 hover:bg-white hover:border-brand-blue/30 transition-all flex items-center justify-between gap-3 group"
                   >
                     <div className="space-y-1 min-w-0">
                       <div className="flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" />
                         <p className="text-xs sm:text-sm font-bold text-brand-text truncate">
-                          {skill} Specialist
+                          {role.includes("Specialist") || role.includes("Developer") || role.includes("Engineer") || role.includes("Lead")
+                            ? role
+                            : `${role} Specialist`}
                         </p>
                       </div>
                       <p className="text-[11px] text-brand-muted">
-                        Looking for expertise in {skill}
+                        Role posted by team leader
                       </p>
                     </div>
 

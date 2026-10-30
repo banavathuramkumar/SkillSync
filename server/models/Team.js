@@ -64,6 +64,14 @@ const teamSchema = new mongoose.Schema(
       required: [true, "At least one required skill must be specified"],
       index: true,
     },
+    openRoles: {
+      type: [String],
+      default: [],
+    },
+    techStack: {
+      type: [String],
+      default: [],
+    },
     state: {
       type: String,
       trim: true,
