@@ -12,6 +12,7 @@ import { useAuthStore } from "../../store/useAuthStore";
 import { useMessageStore } from "../../store/useMessageStore";
 import { formatTimeAgo } from "../../utils/formatters";
 import { UserAvatar } from "../common/UserAvatar";
+import { ChatCallToolbar } from "./ChatCallToolbar";
 import { VideoMeetingModal } from "./VideoMeetingModal";
 import { MeetingInvitationMessage } from "./MeetingInvitationMessage";
 import {
