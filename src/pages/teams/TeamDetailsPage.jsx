@@ -386,22 +386,20 @@ export const TeamDetailsPage = () => {
                 )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
                 {rolesList.map((role, index) => (
                   <div
                     key={`${role}-${index}`}
-                    className="p-3.5 rounded-2xl border border-brand-border bg-slate-50/70 hover:bg-white hover:border-brand-blue/30 transition-all flex items-center justify-between gap-3 group"
+                    className="p-4 rounded-2xl border border-brand-border bg-slate-50/70 hover:bg-white hover:border-brand-blue/30 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 group"
                   >
-                    <div className="space-y-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" />
-                        <p className="text-xs sm:text-sm font-bold text-brand-text truncate">
-                          {role.includes("Specialist") || role.includes("Developer") || role.includes("Engineer") || role.includes("Lead")
-                            ? role
-                            : `${role} Specialist`}
+                    <div className="space-y-1 min-w-0 flex-1">
+                      <div className="flex items-start sm:items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse mt-1.5 sm:mt-0 flex-shrink-0" />
+                        <p className="text-xs sm:text-sm font-bold text-brand-text break-words">
+                          {role}
                         </p>
                       </div>
-                      <p className="text-[11px] text-brand-muted">
+                      <p className="text-[11px] text-brand-muted pl-4">
                         Role posted by team leader
                       </p>
                     </div>
@@ -412,14 +410,16 @@ export const TeamDetailsPage = () => {
                           setSelectedRoleForModal(role);
                           setIsJoinModalOpen(true);
                         }}
-                        className="px-2.5 py-1 text-[11px] font-semibold text-brand-blue bg-blue-50 group-hover:bg-brand-blue group-hover:text-white rounded-lg transition-colors flex-shrink-0"
+                        className="self-start sm:self-center px-3.5 py-1.5 text-xs font-semibold text-brand-blue bg-blue-50 group-hover:bg-brand-blue group-hover:text-white rounded-xl transition-colors flex-shrink-0"
                       >
-                        Apply
+                        Apply for Role
                       </button>
                     ) : (
-                      <Badge variant="success" size="sm">
-                        Open
-                      </Badge>
+                      <span className="self-start sm:self-center">
+                        <Badge variant="success" size="sm">
+                          Open
+                        </Badge>
+                      </span>
                     )}
                   </div>
                 ))}
