@@ -80,6 +80,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    resumeData: {
+      type: String, // Base64 encoded PDF string stored permanently in MongoDB
+      default: "",
+    },
+    resumeContentType: {
+      type: String,
+      default: "application/pdf",
+    },
     avatar: {
       type: String,
       default: "",

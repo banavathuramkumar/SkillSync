@@ -386,9 +386,20 @@ export const uploadResumeFile = async (req, res) => {
   const resumeUrl = `/api/auth/resume/${req.file.filename}`;
   const originalName = req.file.originalname;
 
+  // Also read file buffer and store permanently in MongoDB to survive container restarts/ephemeral disks
+  let resumeBase64 = "";
+  try {
+    const fileBuffer = fs.readFileSync(req.file.path);
+    resumeBase64 = fileBuffer.toString("base64");
+  } catch (readErr) {
+    console.warn("[Resume Upload] Failed to read buffer for DB storage:", readErr.message);
+  }
+
   await User.findByIdAndUpdate(req.user._id, {
     resumeUrl,
     resumeFilename: originalName,
+    resumeData: resumeBase64,
+    resumeContentType: req.file.mimetype || "application/pdf",
   });
 
   res.json({
@@ -459,17 +470,40 @@ export const serveResume = async (req, res) => {
   const safeFilename = path.basename(filename);
   const filePath = path.join(env.UPLOAD_DIR, "resumes", safeFilename);
 
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).json({
-      success: false,
-      error: "Resume file not found.",
-    });
+  // 1. Try disk if present
+  if (fs.existsSync(filePath)) {
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `inline; filename="${safeFilename}"`);
+    const stream = fs.createReadStream(filePath);
+    return stream.pipe(res);
   }
 
-  res.setHeader("Content-Type", "application/pdf");
-  res.setHeader("Content-Disposition", `inline; filename="${safeFilename}"`);
-  const stream = fs.createReadStream(filePath);
-  stream.pipe(res);
+  // 2. Fallback: Lookup in MongoDB Atlas database (preserves files across server redeploys)
+  try {
+    const user = await User.findOne({
+      $or: [
+        { resumeUrl: `/api/auth/resume/${safeFilename}` },
+        { resumeUrl: new RegExp(safeFilename, "i") },
+      ],
+    }).select("+resumeData resumeContentType resumeFilename");
+
+    if (user && user.resumeData) {
+      const buffer = Buffer.from(user.resumeData, "base64");
+      res.setHeader("Content-Type", user.resumeContentType || "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        `inline; filename="${user.resumeFilename || safeFilename}"`
+      );
+      return res.end(buffer);
+    }
+  } catch (dbErr) {
+    console.error("[Serve Resume] DB Fallback error:", dbErr.message);
+  }
+
+  return res.status(404).json({
+    success: false,
+    error: "Resume file not found.",
+  });
 };
 
 /**
