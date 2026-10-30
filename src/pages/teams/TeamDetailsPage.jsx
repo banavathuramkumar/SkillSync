@@ -53,6 +53,7 @@ export const TeamDetailsPage = () => {
 
   const [activeTab, setActiveTab] = useState("overview"); // "overview" | "members" | "meetings" | "discussion" | "requests"
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [selectedRoleForModal, setSelectedRoleForModal] = useState("");
   const [selectedApplicantReq, setSelectedApplicantReq] = useState(null);
   const [isTeamChatOpen, setIsTeamChatOpen] = useState(false);
 
@@ -407,7 +408,10 @@ export const TeamDetailsPage = () => {
 
                     {!isOwner && !isMember && members.length < maxMembers && team.status === "Recruiting" ? (
                       <button
-                        onClick={() => setIsJoinModalOpen(true)}
+                        onClick={() => {
+                          setSelectedRoleForModal(role);
+                          setIsJoinModalOpen(true);
+                        }}
                         className="px-2.5 py-1 text-[11px] font-semibold text-brand-blue bg-blue-50 group-hover:bg-brand-blue group-hover:text-white rounded-lg transition-colors flex-shrink-0"
                       >
                         Apply
@@ -597,8 +601,12 @@ export const TeamDetailsPage = () => {
       {/* Join Request Modal */}
       <JoinRequestModal
         isOpen={isJoinModalOpen}
-        onClose={() => setIsJoinModalOpen(false)}
+        onClose={() => {
+          setIsJoinModalOpen(false);
+          setSelectedRoleForModal("");
+        }}
         team={team}
+        initialRole={selectedRoleForModal}
       />
 
       {/* Applicant Review Modal for Owner */}

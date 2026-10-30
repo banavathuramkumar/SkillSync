@@ -4,16 +4,26 @@ import { Send, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useTeamStore } from "../../store/useTeamStore";
 
-export const JoinRequestModal = ({ isOpen, onClose, team }) => {
-  const [selectedRole, setSelectedRole] = useState("");
+export const JoinRequestModal = ({ isOpen, onClose, team, initialRole = "" }) => {
+  const [selectedRole, setSelectedRole] = useState(initialRole);
   const [pitchMessage, setPitchMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { requestToJoin, fetchMyRequests } = useTeamStore();
+
+  React.useEffect(() => {
+    if (initialRole) {
+      setSelectedRole(initialRole);
+    }
+  }, [initialRole]);
 
   if (!team) return null;
 
   const teamId = team._id || team.id;
   const ownerName = team.owner?.name || team.ownerName || "the squad leader";
+  const rolesAvailable =
+    team.openRoles && team.openRoles.length > 0
+      ? team.openRoles
+      : team.requiredSkills?.map((s) => `${s} Specialist`) || [];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,19 +60,18 @@ export const JoinRequestModal = ({ isOpen, onClose, team }) => {
           <label className="block text-xs font-semibold text-brand-text mb-1.5">
             Role You Want to Fill
           </label>
-          {team.requiredSkills && team.requiredSkills.length > 0 ? (
+          {rolesAvailable.length > 0 ? (
             <select
               value={selectedRole}
               onChange={(e) => setSelectedRole(e.target.value)}
               className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-50 border border-brand-border rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue"
             >
-              <option value="">Select a role or skill...</option>
-              {team.requiredSkills.map((skill) => (
-                <option key={skill} value={`${skill} Specialist`}>
-                  {skill} Specialist
+              <option value="">Select an open role...</option>
+              {rolesAvailable.map((role) => (
+                <option key={role} value={role}>
+                  {role}
                 </option>
               ))}
-              <option value="Full Stack Developer">Full Stack Developer</option>
               <option value="General Contributor">General Contributor</option>
             </select>
           ) : (
