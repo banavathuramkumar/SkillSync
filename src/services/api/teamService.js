@@ -41,6 +41,14 @@ export const teamService = {
     return await apiClient.post(`/teams/${teamId}/comments`, { text });
   },
 
+  leaveTeam: async (teamId) => {
+    return await apiClient.post(`/teams/${teamId}/leave`);
+  },
+
+  removeMember: async (teamId, memberUserId) => {
+    return await apiClient.delete(`/teams/${teamId}/members/${memberUserId}`);
+  },
+
   // Join Requests
   requestToJoin: async (teamId, role, message) => {
     return await apiClient.post("/requests", { teamId, role, message });

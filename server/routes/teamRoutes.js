@@ -10,6 +10,8 @@ import {
   getSavedTeams,
   getMyTeams,
   addComment,
+  leaveTeam,
+  removeMember,
 } from "../controllers/teamController.js";
 import { protect, requireProfileComplete } from "../middleware/authMiddleware.js";
 
@@ -26,5 +28,7 @@ router.delete("/:id", protect, deleteTeam);
 router.post("/:id/toggle-recruitment", protect, toggleRecruitment);
 router.post("/:id/save", protect, toggleSaveTeam);
 router.post("/:id/comments", protect, requireProfileComplete, addComment);
+router.post("/:id/leave", protect, leaveTeam);
+router.delete("/:id/members/:userId", protect, removeMember);
 
 export default router;

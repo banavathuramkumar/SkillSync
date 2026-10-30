@@ -19,6 +19,8 @@ import {
   Power,
   ExternalLink,
   UserCheck,
+  LogOut,
+  UserMinus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthStore } from "../../store/useAuthStore";
@@ -47,6 +49,8 @@ export const TeamDetailsPage = () => {
     deleteTeam,
     toggleRecruitmentStatus,
     toggleSaveTeam,
+    leaveTeam,
+    removeMember,
     isLoading,
   } = useTeamStore();
   const { setActiveConversation } = useMessageStore();
@@ -158,6 +162,38 @@ export const TeamDetailsPage = () => {
     setIsTeamChatOpen(true);
   };
 
+  const handleLeaveTeam = async () => {
+    if (
+      window.confirm(
+        `Are you sure you want to drop / leave "${team.name}"? You can reapply later if recruitment is open.`
+      )
+    ) {
+      const res = await leaveTeam(teamId);
+      if (res.success) {
+        toast.info("You have left the squad.");
+        navigate("/teams");
+      } else {
+        toast.error(res.message || "Failed to leave team.");
+      }
+    }
+  };
+
+  const handleRemoveMember = async (memberUserId, memberName) => {
+    if (
+      window.confirm(
+        `Are you sure you want to drop ${memberName} from the squad? Their spot will be reopened for new applicants.`
+      )
+    ) {
+      const res = await removeMember(teamId, memberUserId);
+      if (res.success) {
+        toast.success(`${memberName} was removed from the squad.`);
+        fetchTeamById(teamId);
+      } else {
+        toast.error(res.message || "Failed to remove member.");
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Top Banner / Hero */}
@@ -235,6 +271,18 @@ export const TeamDetailsPage = () => {
               >
                 <MessageSquare className="w-4 h-4" />
                 <span>Open Team Chat</span>
+              </button>
+            )}
+
+            {/* If Member (and not Owner): Leave Squad / Drop */}
+            {isMember && !isOwner && (
+              <button
+                onClick={handleLeaveTeam}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-semibold rounded-xl shadow-sm transition-all"
+                title="Drop / Leave this team"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Leave Squad</span>
               </button>
             )}
 
@@ -481,35 +529,76 @@ export const TeamDetailsPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {members.map((member, idx) => {
               const u = member.user || {};
+              const memberUserId =
+                u._id || member.userId || (typeof member.user === "string" ? member.user : null);
               const name = u.name || member.name || "Member";
               const avatar = u.avatar || member.avatar || "";
               const college = u.college || member.college || "University Student";
+              const isThisMemberOwner =
+                member.isOwner ||
+                (ownerId && memberUserId && ownerId.toString() === memberUserId.toString());
+              const isCurrentUserThisMember =
+                currentUserId && memberUserId && currentUserId.toString() === memberUserId.toString();
 
               return (
                 <div
-                  key={u._id || member.userId || idx}
-                  className="p-4 rounded-2xl border border-brand-border bg-slate-50 flex items-center gap-3"
+                  key={memberUserId || idx}
+                  className="p-4 rounded-2xl border border-brand-border bg-slate-50 flex items-center justify-between gap-3 group hover:border-slate-300 transition-colors"
                 >
-                  <UserAvatar
-                    user={u.name ? u : { name, avatar }}
-                    size="lg"
-                    className="w-12 h-12 rounded-2xl flex-shrink-0"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <p className="text-sm font-bold text-brand-text truncate">
-                        {name}
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <UserAvatar
+                      user={u.name ? u : { name, avatar }}
+                      size="lg"
+                      className="w-12 h-12 rounded-2xl flex-shrink-0"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-sm font-bold text-brand-text truncate">
+                          {name}
+                        </p>
+                        {isThisMemberOwner && (
+                          <span className="text-[10px] font-bold text-brand-blue bg-blue-100/70 px-2 py-0.5 rounded-full">
+                            Leader
+                          </span>
+                        )}
+                        {isCurrentUserThisMember && !isThisMemberOwner && (
+                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded-full">
+                            You
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-brand-muted truncate">{college}</p>
+                      <p className="text-[11px] font-semibold text-emerald-700 mt-1">
+                        {member.role || "Member"}
                       </p>
-                      {member.isOwner && (
-                        <span className="text-[10px] font-bold text-brand-blue bg-blue-100/70 px-2 py-0.5 rounded-full">
-                          Leader
-                        </span>
-                      )}
                     </div>
-                    <p className="text-xs text-brand-muted truncate">{college}</p>
-                    <p className="text-[11px] font-semibold text-emerald-700 mt-1">
-                      {member.role || "Member"}
-                    </p>
+                  </div>
+
+                  {/* Actions for removing or leaving squad */}
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    {/* Team Leader removing a member */}
+                    {isOwner && !isThisMemberOwner && memberUserId && (
+                      <button
+                        onClick={() => handleRemoveMember(memberUserId, name)}
+                        className="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-semibold rounded-xl flex items-center gap-1 transition-all"
+                        title={`Remove ${name} from squad`}
+                      >
+                        <UserMinus className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Remove</span>
+                      </button>
+                    )}
+
+                    {/* Member dropping / leaving squad themselves */}
+                    {!isOwner && isCurrentUserThisMember && (
+                      <button
+                        onClick={handleLeaveTeam}
+                        className="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-semibold rounded-xl flex items-center gap-1 transition-all"
+                        title="Leave squad"
+                      >
+                        <LogOut className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Leave</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               );

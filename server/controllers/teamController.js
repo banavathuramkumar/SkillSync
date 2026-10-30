@@ -3,6 +3,7 @@ import { User } from "../models/User.js";
 import { Conversation } from "../models/Conversation.js";
 import { Comment } from "../models/Comment.js";
 import { Notification } from "../models/Notification.js";
+import { JoinRequest } from "../models/JoinRequest.js";
 import { getIO } from "../sockets/socketHandler.js";
 
 /**
@@ -459,6 +460,180 @@ export const addComment = async (req, res, next) => {
     res.status(201).json({
       success: true,
       comment,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Leave / Drop from a team (Member self-drop)
+ * POST /api/teams/:id/leave
+ */
+export const leaveTeam = async (req, res, next) => {
+  try {
+    const team = await Team.findById(req.params.id);
+    if (!team) {
+      return res.status(404).json({ success: false, error: "Team not found." });
+    }
+
+    const userId = req.user._id.toString();
+
+    // Prevent team leader/creator from leaving their own team (they should disband instead)
+    if (team.owner.toString() === userId) {
+      return res.status(400).json({
+        success: false,
+        error: "Squad leaders cannot drop from their own team. You can disband the team if needed.",
+      });
+    }
+
+    const memberIndex = team.members.findIndex(
+      (m) => m.user.toString() === userId
+    );
+
+    if (memberIndex === -1) {
+      return res.status(400).json({
+        success: false,
+        error: "You are not a member of this team.",
+      });
+    }
+
+    // Remove from team members list
+    team.members.splice(memberIndex, 1);
+
+    // Reopen recruitment if it was closed
+    if (team.status === "Closed" && team.members.length < team.maxMembers) {
+      team.status = "Recruiting";
+    }
+
+    await team.save();
+
+    // Remove user from team chat participants
+    await Conversation.findOneAndUpdate(
+      { team: team._id },
+      { $pull: { participants: req.user._id } }
+    );
+
+    // Reset previous join request so they can re-apply in future if desired
+    await JoinRequest.updateMany(
+      { team: team._id, applicant: req.user._id, status: "accepted" },
+      { $set: { status: "withdrawn" } }
+    );
+
+    // Notify team leader
+    const notif = await Notification.create({
+      recipient: team.owner,
+      sender: req.user._id,
+      title: "Team Member Left Squad",
+      message: `${req.user.name} has dropped/left the squad "${team.name}". A spot is now open.`,
+      type: "team_update",
+      link: `/teams/${team._id}`,
+      metadata: { teamId: team._id },
+    });
+
+    const io = getIO();
+    if (io) {
+      io.to(`user:${team.owner.toString()}`).emit("notification:new", notif);
+      io.to(`conversation:${team._id}`).emit("team:member_left", {
+        teamId: team._id,
+        userId,
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `You have successfully left "${team.name}".`,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Remove a member from a team (Team Leader only - drop/kick member)
+ * DELETE /api/teams/:id/members/:userId
+ */
+export const removeMember = async (req, res, next) => {
+  try {
+    const { id: teamId, userId: memberToRemoveId } = req.params;
+
+    const team = await Team.findById(teamId);
+    if (!team) {
+      return res.status(404).json({ success: false, error: "Team not found." });
+    }
+
+    // Must be team owner
+    if (team.owner.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        error: "Unauthorized. Only the squad leader can remove members.",
+      });
+    }
+
+    // Cannot remove self
+    if (team.owner.toString() === memberToRemoveId) {
+      return res.status(400).json({
+        success: false,
+        error: "Squad leader cannot remove themselves from the team.",
+      });
+    }
+
+    const memberIndex = team.members.findIndex(
+      (m) => m.user.toString() === memberToRemoveId
+    );
+
+    if (memberIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        error: "This user is not a member of your squad.",
+      });
+    }
+
+    const removedMember = team.members[memberIndex];
+    team.members.splice(memberIndex, 1);
+
+    // Reopen recruitment if it was closed
+    if (team.status === "Closed" && team.members.length < team.maxMembers) {
+      team.status = "Recruiting";
+    }
+
+    await team.save();
+
+    // Remove user from team chat participants
+    await Conversation.findOneAndUpdate(
+      { team: team._id },
+      { $pull: { participants: memberToRemoveId } }
+    );
+
+    // Reset their join request status to rejected/withdrawn so they can be re-evaluated
+    await JoinRequest.updateMany(
+      { team: team._id, applicant: memberToRemoveId, status: "accepted" },
+      { $set: { status: "rejected" } }
+    );
+
+    // Send notification to the removed student
+    const notif = await Notification.create({
+      recipient: memberToRemoveId,
+      sender: req.user._id,
+      title: "Removed from Squad",
+      message: `You have been removed from the team "${team.name}" by the squad leader.`,
+      type: "team_update",
+      link: `/teams/${team._id}`,
+      metadata: { teamId: team._id },
+    });
+
+    const io = getIO();
+    if (io) {
+      io.to(`user:${memberToRemoveId}`).emit("notification:new", notif);
+      io.to(`conversation:${team._id}`).emit("team:member_removed", {
+        teamId: team._id,
+        userId: memberToRemoveId,
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Member removed from squad successfully. Position is now open.",
     });
   } catch (error) {
     next(error);

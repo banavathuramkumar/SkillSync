@@ -252,4 +252,36 @@ export const useTeamStore = create((set, get) => ({
       return { success: false, message: err.message };
     }
   },
+
+  /**
+   * Leave / Drop from a team (Member self-drop)
+   */
+  leaveTeam: async (teamId) => {
+    try {
+      const res = await teamService.leaveTeam(teamId);
+      // Refresh current team if loaded
+      if (get().currentTeam && (get().currentTeam._id || get().currentTeam.id) === teamId) {
+        get().fetchTeamById(teamId);
+      }
+      return { success: true, message: res.message };
+    } catch (err) {
+      return { success: false, message: err.message };
+    }
+  },
+
+  /**
+   * Remove a member from team (Team Leader only)
+   */
+  removeMember: async (teamId, userId) => {
+    try {
+      const res = await teamService.removeMember(teamId, userId);
+      // Refresh current team
+      if (get().currentTeam && (get().currentTeam._id || get().currentTeam.id) === teamId) {
+        get().fetchTeamById(teamId);
+      }
+      return { success: true, message: res.message };
+    } catch (err) {
+      return { success: false, message: err.message };
+    }
+  },
 }));
