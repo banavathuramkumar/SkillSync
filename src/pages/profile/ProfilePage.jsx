@@ -559,18 +559,38 @@ export const ProfilePage = () => {
 
               {/* Resume Card */}
               <div className="pt-2">
-                <button
-                  onClick={() => {
-                    toast.success("Downloading simulated resume PDF (local demonstration preview).");
-                  }}
-                  className="w-full flex items-center justify-between p-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold hover:bg-emerald-100 transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    <FileText className="w-4 h-4" />
-                    <span>Download Resume (PDF)</span>
+                {user?.resumeUrl ? (
+                  <a
+                    href={
+                      user.resumeUrl.startsWith("http")
+                        ? user.resumeUrl
+                        : `${
+                            (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL
+                              ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "")
+                              : "") ||
+                            (typeof window !== "undefined" && window.location.hostname !== "localhost"
+                              ? "https://skillsync-api-nqdt.onrender.com"
+                              : "http://localhost:5000")
+                          }${user.resumeUrl.startsWith("/") ? "" : "/"}${user.resumeUrl}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full flex items-center justify-between p-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold hover:bg-emerald-100 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-emerald-600" />
+                      <span>View Uploaded Resume (PDF)</span>
+                    </div>
+                    <ExternalLink className="w-3.5 h-3.5 text-emerald-600" />
+                  </a>
+                ) : (
+                  <div className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 text-slate-500 border border-slate-200 text-xs font-medium">
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-slate-400" />
+                      <span>No Resume Uploaded</span>
+                    </div>
                   </div>
-                  <span className="text-[10px] uppercase font-bold text-emerald-600">PDF</span>
-                </button>
+                )}
               </div>
             </div>
           </div>

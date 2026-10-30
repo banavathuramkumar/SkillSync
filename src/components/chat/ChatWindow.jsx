@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useMessageStore } from "../../store/useMessageStore";
 import { formatTimeAgo } from "../../utils/formatters";
-import { ChatCallToolbar } from "./ChatCallToolbar";
+import { UserAvatar } from "../common/UserAvatar";
 import { VideoMeetingModal } from "./VideoMeetingModal";
 import { MeetingInvitationMessage } from "./MeetingInvitationMessage";
 import {
@@ -241,7 +241,7 @@ export const ChatWindow = ({
           const senderAvatar =
             msg.senderAvatar ||
             msg.sender?.avatar ||
-            "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150";
+            "";
 
           return (
             <div
@@ -250,10 +250,10 @@ export const ChatWindow = ({
                 isMe ? "flex-row-reverse" : "flex-row"
               }`}
             >
-              <img
-                src={senderAvatar}
-                alt={senderName}
-                className="w-8 h-8 rounded-full object-cover border border-slate-200 mt-1 flex-shrink-0"
+              <UserAvatar
+                user={msg.sender?.name ? msg.sender : { name: senderName, avatar: senderAvatar }}
+                size="sm"
+                className="w-8 h-8 rounded-full mt-1 flex-shrink-0"
               />
 
               <div

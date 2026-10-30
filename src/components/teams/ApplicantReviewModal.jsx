@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Modal } from "../common/Modal";
 import { Badge } from "../common/Badge";
+import { UserAvatar } from "../common/UserAvatar";
 import {
   CheckCircle2,
   XCircle,
@@ -28,7 +29,6 @@ export const ApplicantReviewModal = ({
 
   const applicant = request.applicant || {};
   const applicantName = applicant.name || request.applicantName || "Applicant";
-  const applicantAvatar = applicant.avatar || request.applicantAvatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150";
   const applicantCollege = applicant.college || request.applicantCollege || "University Student";
   const applicantSkills = applicant.skills || request.applicantSkills || [];
   const applicantBio = applicant.bio || request.applicantBio || "";
@@ -36,6 +36,19 @@ export const ApplicantReviewModal = ({
   const applicantLinkedin = applicant.linkedinUrl || request.applicantLinkedin || "";
   const applicantLeetcode = applicant.leetcodeUrl || request.applicantLeetcode || "";
   const applicantResume = applicant.resumeUrl || request.applicantResume || "";
+
+  // Dynamic API base URL to work seamlessly in both local and deployed production environments
+  const API_ORIGIN =
+    (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL
+      ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "")
+      : "") ||
+    (typeof window !== "undefined" && window.location.hostname !== "localhost"
+      ? "https://skillsync-api-nqdt.onrender.com"
+      : "http://localhost:5000");
+
+  const fullResumeUrl = applicantResume.startsWith("http")
+    ? applicantResume
+    : `${API_ORIGIN}${applicantResume.startsWith("/") ? "" : "/"}${applicantResume}`;
 
   const members = team?.members || [];
   const maxMembers = team?.maxMembers || 4;
@@ -86,10 +99,10 @@ export const ApplicantReviewModal = ({
       <div className="space-y-6">
         {/* Applicant Header */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-4 bg-slate-50 rounded-2xl border border-brand-border">
-          <img
-            src={applicantAvatar}
-            alt={applicantName}
-            className="w-16 h-16 rounded-2xl object-cover border-2 border-brand-blue/20"
+          <UserAvatar
+            user={applicant.name ? applicant : { name: applicantName, avatar: applicant.avatar || request.applicantAvatar }}
+            size="xl"
+            className="w-16 h-16 rounded-2xl border-2 border-brand-blue/20 flex-shrink-0"
           />
           <div className="flex-1 text-center sm:text-left">
             <h4 className="text-lg font-bold text-brand-text">
@@ -205,7 +218,7 @@ export const ApplicantReviewModal = ({
 
             {applicantResume ? (
               <a
-                href={`http://localhost:5000${applicantResume}`}
+                href={fullResumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between p-2.5 rounded-xl border border-emerald-200 bg-emerald-50/50 hover:bg-emerald-50 text-xs font-medium text-emerald-800 transition-colors"

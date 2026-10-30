@@ -9,6 +9,7 @@ import {
   UserCheck,
 } from "lucide-react";
 import { Badge } from "../common/Badge";
+import { UserAvatar } from "../common/UserAvatar";
 import { JoinRequestModal } from "./JoinRequestModal";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useTeamStore } from "../../store/useTeamStore";
@@ -27,7 +28,7 @@ export const TeamCard = ({ team }) => {
   const ownerAvatar =
     team.owner?.avatar ||
     team.ownerAvatar ||
-    "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150";
+    "";
 
   const members = team.members || [];
   const maxMembers = team.maxMembers || 4;
@@ -168,11 +169,11 @@ export const TeamCard = ({ team }) => {
         <div className="pt-4 border-t border-brand-border space-y-3">
           {/* Member count & Lead */}
           <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
-              <img
-                src={ownerAvatar}
-                alt={ownerName}
-                className="w-6 h-6 rounded-full object-cover border border-slate-200"
+            <div className="flex items-center gap-2 min-w-0">
+              <UserAvatar
+                user={team.owner?.name ? team.owner : { name: ownerName, avatar: ownerAvatar }}
+                size="xs"
+                className="w-6 h-6 rounded-lg flex-shrink-0"
               />
               <span className="text-slate-600 font-medium truncate max-w-[120px]">
                 {ownerName}

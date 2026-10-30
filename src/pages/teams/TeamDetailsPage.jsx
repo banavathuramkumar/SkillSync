@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useTeamStore } from "../../store/useTeamStore";
 import { useMessageStore } from "../../store/useMessageStore";
+import { UserAvatar } from "../../components/common/UserAvatar";
 import { Badge } from "../../components/common/Badge";
 import { CommentSection } from "../../components/teams/CommentSection";
 import { JoinRequestModal } from "../../components/teams/JoinRequestModal";
@@ -353,6 +354,62 @@ export const TeamDetailsPage = () => {
               </div>
             </div>
 
+            {/* Open Roles & Positions */}
+            <div className="bg-white rounded-3xl border border-brand-border p-6 shadow-subtle space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-xs font-bold text-brand-text uppercase tracking-wider">
+                    Available Roles to Apply
+                  </h4>
+                  <p className="text-xs text-brand-muted mt-0.5">
+                    {Math.max(0, maxMembers - members.length)} open position{Math.max(0, maxMembers - members.length) === 1 ? "" : "s"} remaining
+                  </p>
+                </div>
+                {!isOwner && !isMember && members.length < maxMembers && team.status === "Recruiting" && (
+                  <button
+                    onClick={() => setIsJoinModalOpen(true)}
+                    className="px-3 py-1.5 bg-brand-blue hover:bg-brand-blue-dark text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
+                  >
+                    Apply Now
+                  </button>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                {team.requiredSkills?.map((skill, index) => (
+                  <div
+                    key={`${skill}-${index}`}
+                    className="p-3.5 rounded-2xl border border-brand-border bg-slate-50/70 hover:bg-white hover:border-brand-blue/30 transition-all flex items-center justify-between gap-3 group"
+                  >
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" />
+                        <p className="text-xs sm:text-sm font-bold text-brand-text truncate">
+                          {skill} Specialist
+                        </p>
+                      </div>
+                      <p className="text-[11px] text-brand-muted">
+                        Looking for expertise in {skill}
+                      </p>
+                    </div>
+
+                    {!isOwner && !isMember && members.length < maxMembers && team.status === "Recruiting" ? (
+                      <button
+                        onClick={() => setIsJoinModalOpen(true)}
+                        className="px-2.5 py-1 text-[11px] font-semibold text-brand-blue bg-blue-50 group-hover:bg-brand-blue group-hover:text-white rounded-lg transition-colors flex-shrink-0"
+                      >
+                        Apply
+                      </button>
+                    ) : (
+                      <Badge variant="success" size="sm">
+                        Open
+                      </Badge>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Tech Stack & Required Skills */}
             <div className="bg-white rounded-3xl border border-brand-border p-6 shadow-subtle space-y-4">
               <div>
@@ -378,10 +435,10 @@ export const TeamDetailsPage = () => {
                 Team Leader
               </h4>
               <div className="flex items-center gap-3">
-                <img
-                  src={team.owner?.avatar || team.ownerAvatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150"}
-                  alt={team.owner?.name || "Leader"}
-                  className="w-12 h-12 rounded-2xl object-cover border border-slate-200"
+                <UserAvatar
+                  user={team.owner?.name ? team.owner : { name: team.owner?.name || "Leader", avatar: team.owner?.avatar || team.ownerAvatar }}
+                  size="lg"
+                  className="w-12 h-12 rounded-2xl flex-shrink-0"
                 />
                 <div>
                   <p className="text-sm font-bold text-brand-text">{team.owner?.name || "Squad Leader"}</p>
@@ -409,7 +466,7 @@ export const TeamDetailsPage = () => {
             {members.map((member, idx) => {
               const u = member.user || {};
               const name = u.name || member.name || "Member";
-              const avatar = u.avatar || member.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150";
+              const avatar = u.avatar || member.avatar || "";
               const college = u.college || member.college || "University Student";
 
               return (
@@ -417,10 +474,10 @@ export const TeamDetailsPage = () => {
                   key={u._id || member.userId || idx}
                   className="p-4 rounded-2xl border border-brand-border bg-slate-50 flex items-center gap-3"
                 >
-                  <img
-                    src={avatar}
-                    alt={name}
-                    className="w-12 h-12 rounded-2xl object-cover border border-slate-200 flex-shrink-0"
+                  <UserAvatar
+                    user={u.name ? u : { name, avatar }}
+                    size="lg"
+                    className="w-12 h-12 rounded-2xl flex-shrink-0"
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
@@ -480,7 +537,7 @@ export const TeamDetailsPage = () => {
               {teamJoinRequests.map((req) => {
                 const applicant = req.applicant || {};
                 const name = applicant.name || req.applicantName || "Applicant";
-                const avatar = applicant.avatar || req.applicantAvatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150";
+                const avatar = applicant.avatar || req.applicantAvatar || "";
                 const college = applicant.college || req.applicantCollege || "University Student";
                 const role = req.role || req.applicantRole;
 
@@ -490,10 +547,10 @@ export const TeamDetailsPage = () => {
                     className="p-5 rounded-2xl border border-brand-border bg-slate-50/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50 transition-colors"
                   >
                     <div className="flex items-start gap-4">
-                      <img
-                        src={avatar}
-                        alt={name}
-                        className="w-12 h-12 rounded-2xl object-cover border border-slate-200 flex-shrink-0"
+                      <UserAvatar
+                        user={applicant.name ? applicant : { name, avatar }}
+                        size="lg"
+                        className="w-12 h-12 rounded-2xl flex-shrink-0"
                       />
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">

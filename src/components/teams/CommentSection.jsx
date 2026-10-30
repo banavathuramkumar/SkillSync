@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { MessageSquare, Send, CornerDownRight, Edit2, Trash2, Check, X } from "lucide-react";
 import { toast } from "sonner";
+import { UserAvatar } from "../common/UserAvatar";
 import { useAuthStore } from "../../store/useAuthStore";
 import { teamService } from "../../services/api/teamService";
 import { formatTimeAgo } from "../../utils/formatters";
@@ -63,10 +64,10 @@ export const CommentSection = ({ teamId, comments = [] }) => {
 
       {/* Post New Comment Box */}
       <form onSubmit={handlePostComment} className="flex gap-3">
-        <img
-          src={user?.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150"}
-          alt={user?.name || "User"}
-          className="w-9 h-9 rounded-xl object-cover border border-slate-200 flex-shrink-0"
+        <UserAvatar
+          user={user}
+          size="sm"
+          className="w-9 h-9 rounded-xl flex-shrink-0"
         />
         <div className="flex-1 space-y-2">
           <textarea
