@@ -59,7 +59,7 @@ app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
     service: "SkillSync Full-Stack API",
-    version: "2.0.0",
+    version: "2.1.0-mongo-resume",
     timestamp: new Date().toISOString(),
     database: isDbConnected() ? "connected" : "disconnected",
     message: isDbConnected()
