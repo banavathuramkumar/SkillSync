@@ -485,7 +485,7 @@ export const serveResume = async (req, res) => {
         { resumeUrl: `/api/auth/resume/${safeFilename}` },
         { resumeUrl: new RegExp(safeFilename, "i") },
       ],
-    }).select("+resumeData resumeContentType resumeFilename");
+    });
 
     if (user && user.resumeData) {
       const buffer = Buffer.from(user.resumeData, "base64");
