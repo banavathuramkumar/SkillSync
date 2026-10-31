@@ -36,6 +36,7 @@ export const ApplicantReviewModal = ({
   const applicantLinkedin = applicant.linkedinUrl || request.applicantLinkedin || "";
   const applicantLeetcode = applicant.leetcodeUrl || request.applicantLeetcode || "";
   const applicantResume = applicant.resumeUrl || request.applicantResume || "";
+  const applicantResumeFilename = applicant.resumeFilename || request.applicantResumeFilename || "";
 
   // Dynamic API base URL to work seamlessly in both local and deployed production environments
   const API_ORIGIN =
@@ -49,6 +50,8 @@ export const ApplicantReviewModal = ({
   const fullResumeUrl = applicantResume.startsWith("http")
     ? applicantResume
     : `${API_ORIGIN}${applicantResume.startsWith("/") ? "" : "/"}${applicantResume}`;
+
+  const resumeHref = `${fullResumeUrl}${fullResumeUrl.includes("?") ? "&" : "?"}t=${Date.now()}`;
 
   const members = team?.members || [];
   const maxMembers = team?.maxMembers || 4;
@@ -218,16 +221,19 @@ export const ApplicantReviewModal = ({
 
             {applicantResume ? (
               <a
-                href={fullResumeUrl}
+                href={resumeHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between p-2.5 rounded-xl border border-emerald-200 bg-emerald-50/50 hover:bg-emerald-50 text-xs font-medium text-emerald-800 transition-colors"
+                title={applicantResumeFilename || "View Verified Resume"}
               >
-                <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-emerald-600" />
-                  <span>View Verified Resume (PDF)</span>
+                <div className="flex items-center gap-2 truncate">
+                  <FileText className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                  <span className="truncate">
+                    {applicantResumeFilename ? `View ${applicantResumeFilename}` : "View Verified Resume (PDF)"}
+                  </span>
                 </div>
-                <ExternalLink className="w-3.5 h-3.5 text-emerald-600" />
+                <ExternalLink className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 ml-2" />
               </a>
             ) : (
               <div className="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-400">

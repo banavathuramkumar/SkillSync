@@ -172,6 +172,7 @@ export const useAuthStore = create((set, get) => ({
           ...get().user,
           resumeUrl: res.resumeUrl,
           resumeFilename: res.resumeFilename,
+          ...(res.user || {}),
         };
         localStorage.setItem("current_user", JSON.stringify(updated));
         set({ user: updated });

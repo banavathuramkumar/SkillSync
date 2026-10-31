@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   User,
   GraduationCap,
@@ -26,12 +26,21 @@ import { UserAvatar } from "../../components/common/UserAvatar";
 import { EDUCATION_LEVELS, INDIAN_STATES, POPULAR_SKILLS } from "../../constants/skills";
 
 export const ProfilePage = () => {
-  const { user, updateProfile, uploadAvatar, removeAvatar } = useAuthStore();
+  const {
+    user,
+    updateProfile,
+    uploadAvatar,
+    removeAvatar,
+    uploadResume,
+    fetchCurrentUser,
+  } = useAuthStore();
   const { teams } = useTeamStore();
 
   const fileInputRef = useRef(null);
+  const resumeInputRef = useRef(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [isUploadingResume, setIsUploadingResume] = useState(false);
 
   // Edit form state
   const [name, setName] = useState(user?.name || "");
@@ -45,7 +54,29 @@ export const ProfilePage = () => {
   const [githubUrl, setGithubUrl] = useState(user?.githubUrl || "");
   const [linkedinUrl, setLinkedinUrl] = useState(user?.linkedinUrl || "");
   const [leetcodeUrl, setLeetcodeUrl] = useState(user?.leetcodeUrl || "");
-  const [resumeName, setResumeName] = useState(user?.resumeName || "Verified_Resume.pdf");
+  const [resumeName, setResumeName] = useState(
+    user?.resumeFilename || "No Resume Uploaded"
+  );
+
+  useEffect(() => {
+    fetchCurrentUser();
+  }, [fetchCurrentUser]);
+
+  useEffect(() => {
+    if (user) {
+      setName(user.name || "");
+      setCollege(user.college || "");
+      setEducationLevel(user.educationLevel || "");
+      setState(user.state || "");
+      setCity(user.city || "");
+      setBio(user.bio || "");
+      setSkills(user.skills || []);
+      setGithubUrl(user.githubUrl || "");
+      setLinkedinUrl(user.linkedinUrl || "");
+      setLeetcodeUrl(user.leetcodeUrl || "");
+      setResumeName(user.resumeFilename || "No Resume Uploaded");
+    }
+  }, [user]);
 
   const myTeams = teams.filter(
     (t) =>
@@ -84,15 +115,35 @@ export const ProfilePage = () => {
     toast.success("Profile updated successfully!");
   };
 
-  const handleResumeChange = (e) => {
-    const file = e.target.files[0];
+  const handleResumeUpload = async (e) => {
+    const file = e.target.files?.[0];
     if (!file) return;
-    if (file.type !== "application/pdf") {
+
+    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
       toast.error("Please upload a PDF format resume.");
       return;
     }
-    setResumeName(file.name);
-    toast.success(`Selected new resume: ${file.name}`);
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Resume file size exceeds the 5MB limit.");
+      return;
+    }
+
+    setIsUploadingResume(true);
+    const formData = new FormData();
+    formData.append("resume", file);
+
+    try {
+      await uploadResume(formData);
+      setResumeName(file.name);
+      toast.success(`Resume uploaded and verified successfully: ${file.name}`);
+      await fetchCurrentUser();
+    } catch (err) {
+      toast.error(err.message || "Failed to upload resume.");
+    } finally {
+      setIsUploadingResume(false);
+      if (resumeInputRef.current) resumeInputRef.current.value = "";
+    }
   };
 
   const handleAvatarUpload = async (e) => {
@@ -407,20 +458,26 @@ export const ProfilePage = () => {
             <label className="block text-xs font-semibold text-brand-text mb-1">
               Resume Document (PDF)
             </label>
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-slate-600 bg-slate-100 px-3 py-2 rounded-xl border border-slate-200 truncate">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="text-xs text-slate-600 bg-slate-100 px-3 py-2 rounded-xl border border-slate-200 truncate max-w-xs">
                 Current: {resumeName}
               </span>
-              <label className="cursor-pointer px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-xl transition-colors">
-                <span>Upload New PDF</span>
+              <label className="cursor-pointer px-3.5 py-2 bg-brand-blue hover:bg-brand-blue-dark text-white text-xs font-semibold rounded-xl transition-colors flex items-center gap-1.5 shadow-sm">
+                <Upload className="w-3.5 h-3.5" />
+                <span>{isUploadingResume ? "Uploading..." : "Upload New PDF"}</span>
                 <input
+                  ref={resumeInputRef}
                   type="file"
-                  accept=".pdf"
-                  onChange={handleResumeChange}
+                  accept=".pdf,application/pdf"
+                  onChange={handleResumeUpload}
+                  disabled={isUploadingResume}
                   className="hidden"
                 />
               </label>
             </div>
+            <p className="text-[11px] text-brand-muted mt-1">
+              Select any PDF up to 5MB. Uploading instantly verifies and updates your resume across all applications.
+            </p>
           </div>
 
           {/* Save & Cancel */}
@@ -557,39 +614,62 @@ export const ProfilePage = () => {
                 )}
               </div>
 
-              {/* Resume Card */}
-              <div className="pt-2">
+              {/* Resume Card with direct update option */}
+              <div className="pt-2 space-y-2.5">
                 {user?.resumeUrl ? (
-                  <a
-                    href={
-                      user.resumeUrl.startsWith("http")
-                        ? user.resumeUrl
-                        : `${
-                            (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL
-                              ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "")
-                              : "") ||
-                            (typeof window !== "undefined" && window.location.hostname !== "localhost"
-                              ? "https://skillsync-api-nqdt.onrender.com"
-                              : "http://localhost:5000")
-                          }${user.resumeUrl.startsWith("/") ? "" : "/"}${user.resumeUrl}`
-                    }
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full flex items-center justify-between p-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold hover:bg-emerald-100 transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-emerald-600" />
-                      <span>View Uploaded Resume (PDF)</span>
-                    </div>
-                    <ExternalLink className="w-3.5 h-3.5 text-emerald-600" />
-                  </a>
-                ) : (
-                  <div className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 text-slate-500 border border-slate-200 text-xs font-medium">
-                    <div className="flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-slate-400" />
-                      <span>No Resume Uploaded</span>
-                    </div>
+                  <div className="space-y-2">
+                    <a
+                      href={
+                        user.resumeUrl.startsWith("http")
+                          ? `${user.resumeUrl}${user.resumeUrl.includes("?") ? "&" : "?"}t=${Date.now()}`
+                          : `${
+                              (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL
+                                ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "")
+                                : "") ||
+                              (typeof window !== "undefined" && window.location.hostname !== "localhost"
+                                ? "https://skillsync-api-nqdt.onrender.com"
+                                : "http://localhost:5000")
+                            }${user.resumeUrl.startsWith("/") ? "" : "/"}${user.resumeUrl}?t=${Date.now()}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full flex items-center justify-between p-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold hover:bg-emerald-100 transition-colors"
+                      title={user.resumeFilename || "View Verified Resume"}
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <FileText className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                        <span className="truncate">{user.resumeFilename || "View Uploaded Resume (PDF)"}</span>
+                      </div>
+                      <ExternalLink className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 ml-2" />
+                    </a>
+
+                    <label className="cursor-pointer w-full flex items-center justify-center gap-1.5 p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 transition-colors">
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>{isUploadingResume ? "Uploading..." : "Replace Resume (PDF)"}</span>
+                      <input
+                        type="file"
+                        accept=".pdf,application/pdf"
+                        onChange={handleResumeUpload}
+                        disabled={isUploadingResume}
+                        className="hidden"
+                      />
+                    </label>
                   </div>
+                ) : (
+                  <label className="cursor-pointer w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-brand-blue border border-dashed border-brand-border text-xs font-semibold transition-colors">
+                    <div className="flex items-center gap-2">
+                      <Upload className="w-4 h-4" />
+                      <span>{isUploadingResume ? "Uploading..." : "Upload Resume (PDF)"}</span>
+                    </div>
+                    <span className="text-[10px] text-slate-400">PDF up to 5MB</span>
+                    <input
+                      type="file"
+                      accept=".pdf,application/pdf"
+                      onChange={handleResumeUpload}
+                      disabled={isUploadingResume}
+                      className="hidden"
+                    />
+                  </label>
                 )}
               </div>
             </div>

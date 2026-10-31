@@ -332,6 +332,7 @@ export const updateProfile = async (req, res, next) => {
       "linkedinUrl",
       "leetcodeUrl",
       "avatar",
+      "resumeFilename",
     ];
 
     allowed.forEach((field) => {
@@ -375,38 +376,71 @@ export const updateProfile = async (req, res, next) => {
  * Upload Resume (PDF only, max 5MB)
  * POST /api/auth/resume
  */
-export const uploadResumeFile = async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({
-      success: false,
-      error: "Please upload a valid PDF file (maximum 5 MB).",
-    });
-  }
-
-  const resumeUrl = `/api/auth/resume/${req.file.filename}`;
-  const originalName = req.file.originalname;
-
-  // Also read file buffer and store permanently in MongoDB to survive container restarts/ephemeral disks
-  let resumeBase64 = "";
+export const uploadResumeFile = async (req, res, next) => {
   try {
-    const fileBuffer = fs.readFileSync(req.file.path);
-    resumeBase64 = fileBuffer.toString("base64");
-  } catch (readErr) {
-    console.warn("[Resume Upload] Failed to read buffer for DB storage:", readErr.message);
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: "Please upload a valid PDF file (maximum 5 MB).",
+      });
+    }
+
+    const resumeUrl = `/api/auth/resume/${req.file.filename}`;
+    const originalName = req.file.originalname;
+
+    // Read file buffer and store permanently in MongoDB to survive container restarts/ephemeral disks
+    let resumeBase64 = "";
+    if (req.file.buffer) {
+      resumeBase64 = req.file.buffer.toString("base64");
+    } else if (req.file.path && fs.existsSync(req.file.path)) {
+      const fileBuffer = fs.readFileSync(req.file.path);
+      resumeBase64 = fileBuffer.toString("base64");
+    }
+
+    if (!resumeBase64) {
+      return res.status(500).json({
+        success: false,
+        error: "Could not read uploaded PDF resume file.",
+      });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        resumeUrl,
+        resumeFilename: originalName,
+        resumeData: resumeBase64,
+        resumeContentType: req.file.mimetype || "application/pdf",
+      },
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+      resumeUrl,
+      resumeFilename: originalName,
+      user: {
+        id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        college: updatedUser.college,
+        educationLevel: updatedUser.educationLevel,
+        state: updatedUser.state,
+        city: updatedUser.city,
+        skills: updatedUser.skills,
+        bio: updatedUser.bio,
+        githubUrl: updatedUser.githubUrl,
+        linkedinUrl: updatedUser.linkedinUrl,
+        leetcodeUrl: updatedUser.leetcodeUrl,
+        resumeUrl: updatedUser.resumeUrl,
+        resumeFilename: updatedUser.resumeFilename,
+        avatar: updatedUser.avatar,
+        isProfileComplete: updatedUser.isProfileComplete,
+      },
+    });
+  } catch (err) {
+    next(err);
   }
-
-  await User.findByIdAndUpdate(req.user._id, {
-    resumeUrl,
-    resumeFilename: originalName,
-    resumeData: resumeBase64,
-    resumeContentType: req.file.mimetype || "application/pdf",
-  });
-
-  res.json({
-    success: true,
-    resumeUrl,
-    resumeFilename: originalName,
-  });
 };
 
 /**
@@ -470,6 +504,11 @@ export const serveResume = async (req, res) => {
   const safeFilename = path.basename(filename);
   const filePath = path.join(env.UPLOAD_DIR, "resumes", safeFilename);
 
+  // Set anti-caching headers so updated resumes open immediately and don't leak stale browser caches
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+
   // 1. Try disk if present
   if (fs.existsSync(filePath)) {
     res.setHeader("Content-Type", "application/pdf");
@@ -478,14 +517,23 @@ export const serveResume = async (req, res) => {
     return stream.pipe(res);
   }
 
-  // 2. Fallback: Lookup in MongoDB Atlas database (preserves files across server redeploys)
+  // 2. Lookup in MongoDB Atlas database (preserves files across server redeploys and ephemeral disks)
   try {
-    const user = await User.findOne({
+    let user = await User.findOne({
       $or: [
         { resumeUrl: `/api/auth/resume/${safeFilename}` },
-        { resumeUrl: new RegExp(safeFilename, "i") },
+        { resumeUrl: safeFilename },
       ],
     });
+
+    // If not found by exact URL (e.g. user updated their resume and filename timestamp changed),
+    // extract userId from filename format: "resume-<userId>-<timestamp>.pdf"
+    if (!user) {
+      const match = safeFilename.match(/^resume-([a-f0-9]{24})-/i);
+      if (match && match[1]) {
+        user = await User.findById(match[1]);
+      }
+    }
 
     if (user && user.resumeData) {
       const buffer = Buffer.from(user.resumeData, "base64");
