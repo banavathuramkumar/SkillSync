@@ -217,7 +217,7 @@ All API endpoints, authentication flows, and permission guards are tested.
 
 ## 👨‍💻 Founder & Community
 
-* **Created & Engineered by:** **[Ramkumar Banavathu](https://github.com/banavathuramkumar)** (SRM University-AP)
+* **Created & Engineered by:** **[Ramkumar Banavathu](https://github.com/banavathuramkumar)** (SRM University-AP),** **[budigamnishwitha](https://github.com/budigamnishwitha)**
 * **Official Community:** **Corporate Connect** — *"Never Miss an Opportunity"*  
   💬 [Join the Corporate Connect WhatsApp Channel](https://whatsapp.com/channel/0029VbDvlzXBKfi7j5EOYO2r)
 
