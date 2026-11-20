@@ -23,10 +23,10 @@ export const UpcomingDeadlines = () => {
           </h4>
         </div>
         <Link
-          to="/competitions"
+          to="/teams"
           className="text-xs font-semibold text-brand-blue hover:underline"
         >
-          View all
+          View all squads
         </Link>
       </div>
 

@@ -107,7 +107,7 @@ export const LandingPage = () => {
               onClick={(e) => scrollToSection(e, "founder")}
               className="hover:text-brand-blue transition-colors cursor-pointer"
             >
-              Founder
+              Founder & Developers
             </button>
           </nav>
 
@@ -254,18 +254,22 @@ export const LandingPage = () => {
         <CorporateConnectCard />
       </section>
 
-      {/* Founder Profile Section */}
+      {/* Founder and Developers Section */}
       <section id="founder" className="py-16 bg-slate-50 border-t border-brand-border">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-8">
             <span className="text-xs font-bold text-brand-blue uppercase tracking-wider">
-              Vision & Leadership
+              Vision & Engineering
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-brand-text mt-1">
-              Meet the Founder
+              Founder and Developers
             </h2>
           </div>
-          <FounderProfile />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+            {siteConfig.developers.map((dev, idx) => (
+              <FounderProfile key={idx} member={dev} />
+            ))}
+          </div>
         </div>
       </section>
 

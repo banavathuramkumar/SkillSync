@@ -75,7 +75,7 @@ export const Navbar = ({ onOpenSidebar }) => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search teams, skills, competitions..."
+            placeholder="Search teams, skills, hackathons..."
             className="w-full pl-9 pr-4 py-1.5 text-xs sm:text-sm bg-slate-50 border border-brand-border rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
           />
         </form>

@@ -5,7 +5,6 @@ import {
   Users,
   PlusCircle,
   Briefcase,
-  Trophy,
   MessageSquare,
   Bell,
   Bookmark,
@@ -34,7 +33,6 @@ export const Sidebar = ({ isOpen, onClose }) => {
     { label: "Find Teams", path: "/teams", icon: Users, end: true },
     { label: "Create Team", path: "/teams/create", icon: PlusCircle, end: true },
     { label: "My Teams", path: "/my-teams", icon: Briefcase },
-    { label: "Competitions", path: "/competitions", icon: Trophy },
     {
       label: "Messages",
       path: "/messages",

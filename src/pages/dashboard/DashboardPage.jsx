@@ -13,6 +13,7 @@ import { PlatformStats } from "../../components/dashboard/PlatformStats";
 import { ActivityChart } from "../../components/dashboard/ActivityChart";
 import { CorporateConnectCard } from "../../components/dashboard/CorporateConnectCard";
 import { FounderProfile } from "../../components/dashboard/FounderProfile";
+import { siteConfig } from "../../config/siteConfig";
 import { UpcomingDeadlines } from "../../components/dashboard/UpcomingDeadlines";
 import { TeamCard } from "../../components/teams/TeamCard";
 import { EmptyState } from "../../components/common/EmptyState";
@@ -133,10 +134,26 @@ export const DashboardPage = () => {
         </div>
       </div>
 
-      {/* 5. Community & Founder Section (Clean 2-Column Responsive Layout) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+      {/* 5. Founder and Developers Section */}
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-lg font-bold text-brand-text">
+            Founder and Developers
+          </h3>
+          <p className="text-xs text-brand-muted">
+            The core builders and contributors powering SkillSync
+          </p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+          {siteConfig.developers.map((dev, idx) => (
+            <FounderProfile key={idx} member={dev} />
+          ))}
+        </div>
+      </div>
+
+      {/* 6. Partner Community Section */}
+      <div>
         <CorporateConnectCard />
-        <FounderProfile />
       </div>
     </div>
   );

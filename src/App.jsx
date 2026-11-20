@@ -20,7 +20,6 @@ import { CreateTeamPage } from "./pages/teams/CreateTeamPage";
 import { TeamDetailsPage } from "./pages/teams/TeamDetailsPage";
 import { MyTeamsPage } from "./pages/teams/MyTeamsPage";
 import { SavedTeamsPage } from "./pages/teams/SavedTeamsPage";
-import { CompetitionsPage } from "./pages/competitions/CompetitionsPage";
 import { MessagesPage } from "./pages/messages/MessagesPage";
 import { NotificationsPage } from "./pages/profile/NotificationsPage";
 import { ProfilePage } from "./pages/profile/ProfilePage";
@@ -63,7 +62,7 @@ export const App = () => {
           <Route path="/teams/:id" element={<TeamDetailsPage />} />
           <Route path="/my-teams" element={<MyTeamsPage />} />
           <Route path="/saved-teams" element={<SavedTeamsPage />} />
-          <Route path="/competitions" element={<CompetitionsPage />} />
+          <Route path="/competitions" element={<Navigate to="/dashboard" replace />} />
           <Route path="/messages" element={<MessagesPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/profile" element={<ProfilePage />} />

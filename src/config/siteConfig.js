@@ -25,11 +25,44 @@ export const siteConfig = {
     mission:
       "Connecting talented students and developers, helping them discover opportunities, and building a collaborative community for innovation.",
     photo: "/assets/ramkumar-banavathu.jpg",
-    // Configurable social placeholders — updated with official URLs
     githubUrl: "https://github.com/banavathuramkumar",
     linkedinUrl: "https://www.linkedin.com/in/banavathu-ramkumar/",
     email: "banavathuramkumar@gmail.com",
+    roleBadge: "Developer & Founder",
+    footerNote: "Direct Founder Office • Verified Profile",
   },
+
+  // Founder and Developers Directory
+  developers: [
+    {
+      name: "Ramkumar Banavathu",
+      title: "Developer & Founder of SkillSync",
+      communityRole: "Team Member & Owner of Corporate Connect",
+      education: "Computer Science and Engineering student at SRM University AP",
+      mission:
+        "Connecting talented students and developers, helping them discover opportunities, and building a collaborative community for innovation.",
+      photo: "/assets/ramkumar-banavathu.jpg",
+      githubUrl: "https://github.com/banavathuramkumar",
+      linkedinUrl: "https://www.linkedin.com/in/banavathu-ramkumar/",
+      email: "banavathuramkumar@gmail.com",
+      roleBadge: "Developer & Founder",
+      footerNote: "Direct Founder Office • Verified Profile",
+    },
+    {
+      name: "Nishwitha Budigam",
+      title: "Team Member & Developer",
+      communityRole: "Team Member & Developer",
+      education: "Computer Science and Engineering student at SRM University AP",
+      mission:
+        "Passionate about building impactful software, solving challenging problems, and empowering collaborative builder squads.",
+      photo: "/assets/nishwitha-budigam.jpg",
+      githubUrl: "https://github.com/budigamnishwitha",
+      linkedinUrl: "https://www.linkedin.com/in/budigam-nishwitha/",
+      email: "nishwithabudigam04@gmail.com",
+      roleBadge: "Team Member & Developer",
+      footerNote: "Core Developer • Verified Profile",
+    },
+  ],
 
   // Corporate Connect Community
   corporateConnect: {
