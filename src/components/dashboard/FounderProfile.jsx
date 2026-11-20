@@ -19,7 +19,7 @@ export const FounderProfile = ({ member, memberIndex }) => {
               <img
                 src={profile.photo}
                 alt={profile.name}
-                className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                className={`w-full h-full object-cover ${profile.imagePosition || "object-center"} group-hover:scale-105 transition-transform duration-300`}
               />
             </div>
             <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-brand-blue to-brand-mint text-white p-1 rounded-full shadow">

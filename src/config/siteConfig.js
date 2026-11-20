@@ -42,6 +42,7 @@ export const siteConfig = {
       mission:
         "Connecting talented students and developers, helping them discover opportunities, and building a collaborative community for innovation.",
       photo: "/assets/ramkumar-banavathu.jpg",
+      imagePosition: "object-top",
       githubUrl: "https://github.com/banavathuramkumar",
       linkedinUrl: "https://www.linkedin.com/in/banavathu-ramkumar/",
       email: "banavathuramkumar@gmail.com",
@@ -56,6 +57,7 @@ export const siteConfig = {
       mission:
         "Passionate about building impactful software, solving challenging problems, and empowering collaborative builder squads.",
       photo: "/assets/nishwitha-budigam.jpg",
+      imagePosition: "object-center",
       githubUrl: "https://github.com/budigamnishwitha",
       linkedinUrl: "https://www.linkedin.com/in/budigam-nishwitha/",
       email: "nishwithabudigam04@gmail.com",
